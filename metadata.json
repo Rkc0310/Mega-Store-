@@ -1,0 +1,5 @@
+{
+  "name": "MegaStore",
+  "description": "Full-stack e-commerce platform with dynamic routing, state management, and Firebase integration.",
+  "requestFramePermissions": []
+}
