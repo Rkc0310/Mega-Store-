@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
-import {db,handleFirestoreError,OperationType,signInWithGoogle,} from "../firebase";
+import { db, handleFirestoreError, OperationType, signInWithGoogle } from "../firebase";
 import { useCartStore } from "../store/cartStore";
 import { useUserStore } from "../store/userStore";
-import {ArrowLeft,ShoppingCart,ShieldCheck,Truck,RefreshCw,} from "lucide-react";
-import { toast } from "sonner"; //for popup message
+import { ArrowLeft, ShoppingCart, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 export const ProductDetail = () => {
   const { id } = useParams();
@@ -47,7 +47,7 @@ export const ProductDetail = () => {
       toast.info("Please sign in to add items to your cart");
       try {
         const loggedInUser = await signInWithGoogle();
-        if (!loggedInUser) return; // User cancelled
+        if (!loggedInUser) return;
       } catch (error) {
         return;
       }
@@ -67,7 +67,7 @@ export const ProductDetail = () => {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-12 flex justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--accent)]"></div>
       </div>
     );
   }
@@ -78,104 +78,87 @@ export const ProductDetail = () => {
     <div className="container mx-auto px-4 py-12">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center text-gray-500 hover:text-purple-600 mb-8 transition-colors"
+        className="inline-flex items-center gap-2 text-[var(--muted)] hover:text-[var(--accent)] transition-colors mb-8"
       >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
+        <ArrowLeft className="h-4 w-4" />
+        Back to shopping
       </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Image Gallery */}
-        <div className="bg-gray-50 rounded-3xl overflow-hidden border">
+      <div className="grid gap-12 lg:grid-cols-[1.1fr_minmax(380px,1fr)]">
+        <div className="rounded-[36px] border border-[var(--border)] bg-[var(--surface)] overflow-hidden shadow-[var(--shadow)]">
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-auto object-cover aspect-square"
+            className="w-full object-cover aspect-square"
             referrerPolicy="no-referrer"
           />
         </div>
 
-        {/* Product Info */}
-        <div className="flex flex-col">
-          <div className="mb-2">
-            <span className="text-sm font-bold text-purple-600 uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full">
-              {product.category}
-            </span>
+        <div className="space-y-8">
+          <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--accent)]">
+            <span>{product.category}</span>
           </div>
 
-          <h1 className="text-4xl font-extrabold tracking-tight mt-4 mb-4">
-            {product.name}
-          </h1>
-
-          <div className="text-3xl font-bold text-gray-900 mb-6">
-            ${product.price.toFixed(2)}
+          <div className="space-y-4">
+            <h1 className="text-5xl font-extrabold tracking-tight text-[var(--text)]">{product.name}</h1>
+            <div className="text-4xl font-bold text-[var(--accent)]">${product.price.toFixed(2)}</div>
+            <p className="text-[var(--muted)] text-lg leading-relaxed">{product.description}</p>
           </div>
 
-          <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-            {product.description}
-          </p>
-
-          <div className="mb-8">
-            <div className="flex items-center mb-4">
-              <span className="font-medium mr-4">Status:</span>
-              {product.stock > 0 ? (
-                <span className="text-green-600 font-bold flex items-center">
-                  <div className="w-2 h-2 bg-green-600 rounded-full mr-2"></div>
-                  In Stock ({product.stock} available)
+          <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-strong)] p-6">
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm font-medium text-[var(--muted)]">Availability</span>
+                <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${product.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                  <span className={`h-2.5 w-2.5 rounded-full ${product.stock > 0 ? 'bg-green-600' : 'bg-red-600'}`} />
+                  {product.stock > 0 ? `In stock (${product.stock})` : 'Out of stock'}
                 </span>
-              ) : (
-                <span className="text-red-600 font-bold flex items-center">
-                  <div className="w-2 h-2 bg-red-600 rounded-full mr-2"></div>
-                  Out of Stock
-                </span>
-              )}
-            </div>
+              </div>
 
-            {product.stock > 0 && (
-              <div className="flex items-center gap-4">
-                <div className="flex items-center border rounded-lg">
+              {product.stock > 0 && (
+                <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center">
+                  <div className="flex items-center overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="h-14 w-14 text-lg font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)]"
+                    >
+                      -
+                    </button>
+                    <div className="flex h-14 min-w-[72px] items-center justify-center text-lg font-semibold text-[var(--text)] border-x border-[var(--border)]">
+                      {quantity}
+                    </div>
+                    <button
+                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                      className="h-14 w-14 text-lg font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)]"
+                    >
+                      +
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors"
+                    onClick={handleAddToCart}
+                    className="inline-flex min-h-[56px] items-center justify-center rounded-3xl bg-[var(--accent)] px-6 text-base font-semibold text-white transition hover:bg-opacity-90"
                   >
-                    -
-                  </button>
-                  <span className="px-4 py-3 font-medium min-w-12 text-center">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setQuantity(Math.min(product.stock, quantity + 1))
-                    }
-                    className="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-r-lg transition-colors"
-                  >
-                    +
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    Add to cart
                   </button>
                 </div>
-
-                <button
-                  onClick={handleAddToCart}
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Add to Cart
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t pt-8 mt-auto">
-            <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-xl">
-              <Truck className="h-6 w-6 text-gray-700 mb-2" />
-              <span className="text-sm font-medium">Free Delivery</span>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-[var(--shadow)]">
+              <Truck className="mx-auto mb-3 h-6 w-6 text-[var(--accent)]" />
+              <p className="font-semibold text-[var(--text)]">Free delivery</p>
             </div>
-            <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-xl">
-              <RefreshCw className="h-6 w-6 text-gray-700 mb-2" />
-              <span className="text-sm font-medium">30-Day Returns</span>
+            <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-[var(--shadow)]">
+              <RefreshCw className="mx-auto mb-3 h-6 w-6 text-[var(--accent)]" />
+              <p className="font-semibold text-[var(--text)]">30-day returns</p>
             </div>
-            <div className="flex flex-col items-center text-center p-4 bg-gray-50 rounded-xl">
-              <ShieldCheck className="h-6 w-6 text-gray-700 mb-2" />
-              <span className="text-sm font-medium">2 Year Warranty</span>
+            <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-[var(--shadow)]">
+              <ShieldCheck className="mx-auto mb-3 h-6 w-6 text-[var(--accent)]" />
+              <p className="font-semibold text-[var(--text)]">Warranty support</p>
             </div>
           </div>
         </div>
