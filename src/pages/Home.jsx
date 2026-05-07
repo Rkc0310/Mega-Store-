@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {ArrowRight,ShoppingBag,Star,ShieldCheck,Truck,}from "lucide-react";
+import { ArrowRight, Star, ShieldCheck, Truck } from "lucide-react";
 import { collection, query, limit, getDocs } from "firebase/firestore";
 import { db, signInWithGoogle } from "../firebase";
 import { useCartStore } from "../store/cartStore";
 import { useUserStore } from "../store/userStore";
 import { toast } from "sonner";
+import { ProductCard } from "../components/ui/ProductCard";
+import { FeatureCard } from "../components/ui/FeatureCard";
 
 export const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { addItem } = useCartStore();
   const { user } = useUserStore();
-  const handleAddToCart = async (e, product) => {
-    e.preventDefault(); // Prevent navigating to product detail
+
+  const handleAddToCart = async (product) => {
     if (!user) {
       toast.info("Please sign in to add items to your cart");
       try {
         const loggedInUser = await signInWithGoogle();
-        if (!loggedInUser) return; // User cancelled
+        if (!loggedInUser) return;
       } catch (error) {
         return;
       }
@@ -55,131 +57,105 @@ export const Home = () => {
   }, []);
 
   return (
-    <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-linear-to-r from-purple-500 to-purple-600 text-white py-24 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20" />
+    <div className="flex flex-col bg-(--bg)">
+      <section className="relative overflow-hidden pt-20 pb-24 px-4">
+        <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-(--accent)/20 blur-3xl" />
+        <div className="absolute right-0 top-24 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl" />
         <div className="container mx-auto relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-            Discover the Extraordinary
-          </h1>
-          <p className="text-xl md:text-2xl max-w-2xl mb-10 text-blue-100">
-            Shop the latest trends, premium electronics, and everyday essentials
-            all in one place.
+          <p className="inline-flex items-center gap-2 rounded-full bg-(--accent-soft) px-4 py-2 text-sm font-semibold text-(--accent) mb-6">
+            New arrivals · curated for a modern home
           </p>
-          <Link
-            to="/products"
-            className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-full font-bold text-lg transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+          <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight max-w-4xl text-(--text) mb-6">
+            A modern shopping experience with bold style and effortless checkout.
+          </h1>
+          <p className="max-w-2xl text-lg text-(--muted) mb-10 leading-relaxed">
+            Discover premium finds, fast shipping, and a beautifully designed storefront built for comfort and clarity.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link
+              to="/products"
+              className="inline-flex items-center justify-center rounded-full bg-(--accent) px-8 py-4 text-base font-semibold text-white shadow-[0_20px_60px_-30px_rgba(124,58,237,0.9)] transition hover:-translate-y-0.5"
+            >
+              Shop featured products
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+            <Link
+              to="/cart"
+              className="inline-flex items-center justify-center rounded-full border border-(--border) bg-(--surface) px-8 py-4 text-base font-semibold text-(--text) transition hover:bg-(--surface-strong)"
+            >
+              View cart
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-16">
+        <div className="grid gap-6 lg:grid-cols-3">
+          <FeatureCard
+            icon={Truck}
+            title="Fast delivery"
+            accentClass="bg-indigo-100 text-indigo-600"
           >
-            Shop Now <ArrowRight className="h-5 w-5" />
-          </Link>
+            Free shipping on orders over $50 and fast, reliable delivery across the country.
+          </FeatureCard>
+          <FeatureCard
+            icon={ShieldCheck}
+            title="Safe checkout"
+            accentClass="bg-violet-100 text-violet-600"
+          >
+            Your payment is protected with secure encryption and trusted checkout flow.
+          </FeatureCard>
+          <FeatureCard
+            icon={Star}
+            title="Curated selection"
+            accentClass="bg-yellow-100 text-yellow-600"
+          >
+            We showcase premium products with thoughtful design and exceptional quality.
+          </FeatureCard>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-16 bg-gray-50 border-b">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl shadow-sm border">
-            <div className="bg-blue-100 p-4 rounded-full mb-4">
-              <Truck className="h-8 w-8 text-purple-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Free Shipping</h3>
-            <p className="text-gray-600">
-              On all orders over $50. Fast and reliable delivery.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl shadow-sm border">
-            <div className="bg-green-100 p-4 rounded-full mb-4">
-              <ShieldCheck className="h-8 w-8 text-green-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Secure Checkout</h3>
-            <p className="text-gray-600">
-              Your payment information is always safe and encrypted.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center p-6 bg-white rounded-2xl shadow-sm border">
-            <div className="bg-yellow-100 p-4 rounded-full mb-4">
-              <Star className="h-8 w-8 text-yellow-600" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">Premium Quality</h3>
-            <p className="text-gray-600">
-              We source only the best products from top brands.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="py-20 container mx-auto px-4">
-        <div className="flex justify-between items-end mb-10">
+      <section className="container mx-auto px-4 py-20">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between mb-6">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight mb-2">
-              Featured Products
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-(--accent) mb-2">
+              Featured products
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-(--text)">
+              Top picks for your cart.
             </h2>
-            <p className="text-gray-600">Handpicked items just for you.</p>
+            <p className="max-w-xl text-(--muted) mt-3 leading-relaxed">
+              Every product is selected to bring style, comfort, and a little delight to your everyday routine.
+            </p>
           </div>
           <Link
             to="/products"
-            className="text-purple-600 font-medium hover:underline flex items-center gap-1"
+            className="inline-flex items-center gap-2 text-(--accent) font-semibold hover:underline"
           >
-            View All <ArrowRight className="h-4 w-4" />
+            Browse all products
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-gray-100 animate-pulse h-80 rounded-2xl"
-              />
+              <div key={i} className="h-96 rounded-3xl bg-(--surface) shadow-(--shadow) animate-pulse" />
             ))}
           </div>
         ) : featuredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
-              <Link
+              <ProductCard
                 key={product.id}
-                to={`/product/${product.id}`}
-                className="group block"
-              >
-                <div className="bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
-                  <div className="aspect-square bg-gray-100 relative overflow-hidden">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <p className="text-xs font-medium text-purple-600 mb-1 uppercase tracking-wider">
-                      {product.category}
-                    </p>
-                    <h3 className="font-bold text-lg mb-2 line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-xl">
-                        ${product.price.toFixed(2)}
-                      </span>
-                      <button
-                        onClick={(e) => handleAddToCart(e, product)}
-                        className="bg-gray-900 text-white p-2 rounded-full hover:bg-purple-600 transition-colors"
-                      >
-                        <ShoppingBag className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                product={product}
+                onAddToCart={handleAddToCart}
+              />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-gray-50 rounded-2xl border border-dashed">
-            <p className="text-gray-500">
-              No products found. Check back later!
-            </p>
+          <div className="rounded-3xl border border-dashed border-(--border) bg-(--surface) p-16 text-center">
+            <p className="text-(--muted)">No products found. Check back later!</p>
           </div>
         )}
       </section>
