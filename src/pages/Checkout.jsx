@@ -37,7 +37,7 @@ export const Checkout = () => {
           price: item.price,
           quantity: item.quantity,
         })),
-        totalAmount: totalPrice() * 1.08, // Including tax
+        totalAmount: totalPrice() * 1.08,
         status: "pending",
         createdAt: serverTimestamp(),
       };
@@ -57,33 +57,28 @@ export const Checkout = () => {
 
   if (success) {
     return (
-      <div className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
-        <div className="bg-green-100 p-6 rounded-full mb-6">
-          <CheckCircle className="h-16 w-16 text-green-600" />
+      <div className="container mx-auto px-4 py-24 flex min-h-[70vh] flex-col items-center justify-center text-center">
+        <div className="mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 shadow-[var(--shadow)]">
+          <CheckCircle className="h-16 w-16" />
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight mb-4">
-          Order Confirmed!
-        </h1>
-        <p className="text-gray-600 text-lg mb-2">
-          Thank you for your purchase, {user.displayName}.
-        </p>
-        <p className="text-gray-500 mb-8">
-          Your order ID is{" "}
-          <span className="font-mono font-bold text-gray-900">{orderId}</span>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-[var(--text)]">Order confirmed!</h1>
+        <p className="text-lg text-[var(--muted)] mb-2">Thank you for your purchase, {user.displayName}.</p>
+        <p className="text-[var(--muted)] mb-8">
+          Your order ID is <span className="font-mono font-semibold text-[var(--text)]">{orderId}</span>
         </p>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row">
           <button
             onClick={() => navigate("/profile")}
-            className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full font-bold transition-colors"
+            className="rounded-full bg-[var(--surface)] px-8 py-4 text-sm font-semibold text-[var(--text)] shadow-[var(--shadow)] transition hover:bg-[var(--surface-strong)]"
           >
-            View Orders
+            View orders
           </button>
           <button
             onClick={() => navigate("/products")}
-            className="bg-blue-100 hover:bg-blue-200 text-purple-800 px-8 py-3 rounded-full font-bold transition-colors"
+            className="rounded-full bg-[var(--accent)] px-8 py-4 text-sm font-semibold text-white transition hover:bg-opacity-90"
           >
-            Continue Shopping
+            Continue shopping
           </button>
         </div>
       </div>
@@ -92,79 +87,65 @@ export const Checkout = () => {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
-      <h1 className="text-4xl font-extrabold tracking-tight mb-8 text-center">
-        Checkout
-      </h1>
+      <h1 className="text-4xl font-extrabold tracking-tight mb-8 text-center text-[var(--text)]">Checkout</h1>
 
-      <div className="bg-white border rounded-3xl p-8 shadow-sm">
-        <h2 className="text-2xl font-bold mb-6 border-b pb-4">
-          Review Your Order
+      <div className="overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[var(--shadow)]">
+        <h2 className="text-2xl font-semibold mb-6 border-b border-[var(--border)] pb-4 text-[var(--text)]">
+          Review your order
         </h2>
 
         <div className="space-y-4 mb-8">
           {items.map((item) => (
-            <div
-              key={item.productId}
-              className="flex justify-between items-center py-2"
-            >
+            <div key={item.productId} className="flex items-center justify-between gap-4 rounded-3xl border border-[var(--border)] bg-[var(--surface-strong)] p-4">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden border">
+                <div className="h-14 w-14 overflow-hidden rounded-3xl bg-[var(--input)]">
                   <img
                     src={item.imageUrl}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 <div>
-                  <p className="font-bold line-clamp-1">{item.name}</p>
-                  <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                  <p className="font-semibold text-[var(--text)] line-clamp-1">{item.name}</p>
+                  <p className="text-sm text-[var(--muted)]">Qty: {item.quantity}</p>
                 </div>
               </div>
-              <div className="font-medium">
-                ${(item.price * item.quantity).toFixed(2)}
-              </div>
+              <div className="font-semibold text-[var(--text)]">${(item.price * item.quantity).toFixed(2)}</div>
             </div>
           ))}
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-2xl mb-8">
-          <div className="flex justify-between text-gray-600 mb-2">
+        <div className="rounded-[32px] border border-[var(--border)] bg-[var(--surface-strong)] p-6 mb-8">
+          <div className="flex justify-between text-[var(--muted)] mb-2">
             <span>Subtotal</span>
-            <span className="font-medium text-gray-900">
-              ${totalPrice().toFixed(2)}
-            </span>
+            <span className="font-medium text-[var(--text)]">${totalPrice().toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-gray-600 mb-2">
+          <div className="flex justify-between text-[var(--muted)] mb-2">
             <span>Shipping</span>
-            <span className="font-medium text-green-600">Free</span>
+            <span className="font-medium text-emerald-600">Free</span>
           </div>
-          <div className="flex justify-between text-gray-600 mb-4">
+          <div className="flex justify-between text-[var(--muted)] mb-4">
             <span>Tax (8%)</span>
-            <span className="font-medium text-gray-900">
-              ${(totalPrice() * 0.08).toFixed(2)}
-            </span>
+            <span className="font-medium text-[var(--text)]">${(totalPrice() * 0.08).toFixed(2)}</span>
           </div>
-          <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
-            <span className="font-bold text-xl">Total</span>
-            <span className="font-extrabold text-3xl text-purple-600">
-              ${(totalPrice() * 1.08).toFixed(2)}
-            </span>
+          <div className="border-t border-[var(--border)] pt-4 flex justify-between items-center text-[var(--text)]">
+            <span className="font-semibold text-lg">Total</span>
+            <span className="text-3xl font-extrabold text-[var(--accent)]">${(totalPrice() * 1.08).toFixed(2)}</span>
           </div>
         </div>
 
         <button
           onClick={handlePlaceOrder}
           disabled={loading}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full rounded-3xl bg-[var(--accent)] px-6 py-4 text-base font-semibold text-white transition hover:bg-opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Processing...
-            </>
+            <span className="inline-flex items-center gap-2">
+              <Loader2 className="h-5 w-5 animate-spin" /> Processing...
+            </span>
           ) : (
-            "Place Order"
+            "Place order"
           )}
         </button>
       </div>
