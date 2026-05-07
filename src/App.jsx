@@ -7,6 +7,7 @@ import { useUserStore } from './store/userStore';
 import { useCartStore } from './store/cartStore';
 import { Toaster } from 'sonner';
 
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Layout } from './components/layout/Layout';
 import { Home } from './pages/Home';
 import { Products } from './pages/Products';
@@ -24,7 +25,7 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      
+
       if (currentUser) {
         try {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
@@ -34,14 +35,14 @@ export default function App() {
             setRole('customer');
           }
         } catch (error) {
-          console.error("Error fetching user role:", error);
+          console.error('Error fetching user role:', error);
           setRole('customer');
         }
       } else {
         setRole(null);
         clearCart();
       }
-      
+
       setLoading(false);
     });
 
@@ -50,28 +51,30 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] text-[var(--text)]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[var(--accent)]"></div>
       </div>
     );
   }
 
   return (
-    <Router>
-      <Toaster position="top-center" richColors />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="products" element={<Products />} />
-          <Route path="product/:id" element={<ProductDetail />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="admin" element={<Admin />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Toaster position="top-center" richColors />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="products" element={<Products />} />
+            <Route path="product/:id" element={<ProductDetail />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="admin" element={<Admin />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
