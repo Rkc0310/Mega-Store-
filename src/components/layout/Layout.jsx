@@ -5,7 +5,7 @@ import { Footer } from './Footer';
 
 export const Layout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900 font-sans">
+    <div className="min-h-screen flex flex-col bg-[var(--bg)] text-[var(--text)] transition-colors duration-300">
       <Navbar />
       <main className="grow">
         <Outlet />
