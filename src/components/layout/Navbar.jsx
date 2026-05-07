@@ -1,13 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart, User, LogOut, Package } from "lucide-react";
+import { ShoppingCart, User, LogOut, Package, Moon, Sun } from "lucide-react";
 import { useCartStore } from "../../store/cartStore";
 import { useUserStore } from "../../store/userStore";
 import { signInWithGoogle, logout } from "../../firebase";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export const Navbar = () => {
   const { totalItems, clearCart } = useCartStore();
   const { user, role } = useUserStore();
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     await logout();
@@ -15,45 +17,56 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60">
+    <nav className="sticky top-0 z-50 w-full border-b border-(--border) bg-(--surface)/95 backdrop-blur-xl shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <Package className="h-6 w-6 text-purple-600" />
-          <span className="font-bold text-xl tracking-tight">MegaStore</span>
+        <Link to="/" className="flex items-center gap-3">
+          <Package className="h-6 w-6 text-(--accent)" />
+          <span className="text-2xl font-black tracking-tight text-(--text)">
+            MEGA<span className="text-(--accent)">STORE</span>
+          </span>
         </Link>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center gap-4">
           <Link
-            to="/home"
-            className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors"
+            to="/"
+            className="text-sm font-medium text-(--muted) hover:text-(--accent) transition-colors"
           >
             Home
           </Link>
 
           <Link
             to="/products"
-            className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors"
+            className="text-sm font-medium text-(--muted) hover:text-(--accent) transition-colors"
           >
             Products
           </Link>
 
           <Link
             to="/cart"
-            className="relative text-gray-700 hover:text-purple-600 transition-colors"
+            className="relative text-(--muted) hover:text-(--accent) transition-colors"
           >
             <ShoppingCart className="h-5 w-5" />
             {totalItems() > 0 && (
-              <span className="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-(--accent) text-white text-[0.65rem] font-bold rounded-full h-5 w-5 flex items-center justify-center">
                 {totalItems()}
               </span>
             )}
           </Link>
 
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-(--border) bg-(--surface-strong) text-(--text) transition hover:border-(--accent) hover:text-(--accent)]"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
+
           {user ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-4">
               <Link
                 to="/profile"
-                className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors"
+                className="flex items-center gap-2 text-sm font-medium text-(--muted) hover:text-(--accent)] transition-colors"
               >
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline-block">
@@ -63,14 +76,14 @@ export const Navbar = () => {
               {role === "admin" && (
                 <Link
                   to="/admin"
-                  className="text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
+                  className="text-sm font-medium text-(--accent) hover:text-opacity-90 transition-colors"
                 >
                   Admin
                 </Link>
               )}
               <button
                 onClick={handleLogout}
-                className="text-gray-500 hover:text-red-600 transition-colors"
+                className="text-(--muted) hover:text-red-500 transition-colors"
                 title="Logout"
               >
                 <LogOut className="h-4 w-4" />
@@ -79,7 +92,7 @@ export const Navbar = () => {
           ) : (
             <button
               onClick={signInWithGoogle}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+              className="bg-(--accent) hover:bg-opacity-95 text-white px-4 py-2 rounded-full text-sm font-semibold transition"
             >
               Sign In
             </button>
